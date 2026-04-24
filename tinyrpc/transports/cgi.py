@@ -30,18 +30,7 @@ class CGIServerTransport(ServerTransport):
 
         :return: A tuple consisting of ``(context, message)``.
         """
-
-        if not ('REQUEST_METHOD' in os.environ
-                and os.environ['REQUEST_METHOD'] == 'POST'):
-            print("Status: 405 Method not Allowed; only POST is accepted")
-            exit(0)
-
-        # POST
-        content_length = int(os.environ['CONTENT_LENGTH'])
-        request_json = sys.stdin.read(content_length)
-        request_json = urlparse.unquote(request_json)
-        # context isn't used with cgi
-        return None, request_json
+        pass
 
     def send_reply(self, context: Any, reply: bytes) -> None:
         """Sends a reply to a client.
@@ -55,14 +44,4 @@ class CGIServerTransport(ServerTransport):
         :param any context: A context returned by :py:func:`receive_message`.
         :param bytes reply: A binary to send back as the reply.
         """
-
-        # context isn't used with cgi
-        # Using sys.stdout.buffer.write() fails as stdout is on occasion monkey patched
-        # to AsyncFile which doesn't support the buffer attribute.
-        print("Status: 200 OK")
-        print("Content-Type: application/json")
-        print("Cache-Control: no-cache")
-        print("Pragma: no-cache")
-        print("Content-Length: %d" % len(reply))
-        print()
-        print(reply.decode())
+        pass

@@ -29,23 +29,13 @@ class RabbitMQServerTransport(ServerTransport):
         self.message_received = False
 
     def receive_message(self) -> Tuple[Any, bytes]:
-        while not self.message_received:
-            self.connection.process_data_events()
-        return self.context, self.message
+        pass
 
     def send_reply(self, context: Any, reply: bytes) -> None:
-        ch, method, props = context
-        ch.basic_publish(exchange=self.exchange,
-                     routing_key=props.reply_to,
-                     properties=pika.BasicProperties(correlation_id = props.correlation_id),
-                     body=reply)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-        self.message_received = False # message processed, reset status
+        pass
 
     def on_receive(self, ch, method, props, body):
-        self.context = (ch, method, props)
-        self.message = body
-        self.message_received = True
+        pass
 
     @classmethod
     def create(cls, host: str, queue: str, exchange: str = '') -> 'RabbitMQServerTransport':
@@ -58,8 +48,7 @@ class RabbitMQServerTransport(ServerTransport):
         :param queue: The RabbitMQ queue to consume messages from.
         :param exchange: The RabbitMQ exchange to use.
         """
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host))
-        return cls(connection, queue, exchange)
+        pass
 
 
 class RabbitMQClientTransport(ClientTransport):
@@ -110,8 +99,7 @@ class RabbitMQClientTransport(ClientTransport):
             return self.response_data
 
     def on_response(self, ch, method, props, body):
-        if self.corr_id == props.correlation_id:
-            self.response_data = body
+        pass
 
     @classmethod
     def create(cls, host: str, routing_key: str, exchange: str = '') -> 'RabbitMQClientTransport':
@@ -124,5 +112,4 @@ class RabbitMQClientTransport(ClientTransport):
         :param routing_key: The RabbitMQ routing key to direct messages.
         :param exchange: The RabbitMQ exchange to use.
         """
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host))
-        return cls(connection, routing_key, exchange)
+        pass

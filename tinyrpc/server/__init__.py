@@ -72,8 +72,7 @@ class RPCServer(object):
         Starts the server loop; continuously calling :py:meth:`receive_one_message`
         to process the next incoming request.
         """
-        while True:
-            self.receive_one_message()
+        pass
 
     def receive_one_message(self) -> None:
         """Handle a single request.
@@ -89,32 +88,7 @@ class RPCServer(object):
         request and the return value (either an error or a result) will be sent
         back to the client using the transport.
         """
-        context, message = self.transport.receive_message()
-        if callable(self.trace):
-            self.trace('-->', context, message)
-
-        # assuming protocol is thread-safe and dispatcher is thread-safe, as
-        # long as its immutable
-
-        def handle_message(context: Any, message: bytes) -> None:
-            """Parse, process and reply a single request."""
-            try:
-                request = self.protocol.parse_request(message)
-            except tinyrpc.exc.RPCError as e:
-                response = e.error_respond()
-            else:
-                response = self.dispatcher.dispatch(
-                    request, getattr(self.protocol, '_caller', None)
-                )
-
-            # send reply
-            if response is not None:
-                result = response.serialize()
-                if callable(self.trace):
-                    self.trace('<--', context, result)
-                self.transport.send_reply(context, result)
-
-        self._spawn(handle_message, context, message)
+        pass
 
     def _spawn(self, func: Callable, *args, **kwargs):
         """Spawn a handler function.
@@ -129,4 +103,4 @@ class RPCServer(object):
         :param args: Arguments to ``func``.
         :param kwargs: Keyword arguments to ``func``.
         """
-        func(*args, **kwargs)
+        pass

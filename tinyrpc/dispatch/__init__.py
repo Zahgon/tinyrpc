@@ -66,8 +66,7 @@ def public(name = None):
         return f
 
     def _(f):
-        f._rpc_public_name = name or f.__name__
-        return f
+        pass
 
     return _
 
@@ -114,8 +113,7 @@ class RPCDispatcher(object):
             return name
 
         def _(f):
-            self.add_method(f, name=name)
-            return f
+            pass
 
         return _
 
@@ -127,7 +125,7 @@ class RPCDispatcher(object):
         :param str prefix: A prefix. All of the new subdispatchers methods will be
                        available as prefix + their original name.
         """
-        self.subdispatchers.setdefault(prefix, []).append(dispatcher)
+        pass
 
     def add_method(self, f: Callable, name: str = None) -> None:
         """Add a method to the dispatcher.
@@ -162,18 +160,7 @@ class RPCDispatcher(object):
         :rtype: callable
         :raises: :py:exc:`~tinyrpc.exc.MethodNotFoundError`
         """
-        if name in self.method_map:
-            return self.method_map[name]
-
-        for prefix, subdispatchers in self.subdispatchers.items():
-            if name.startswith(prefix):
-                for sd in subdispatchers:
-                    try:
-                        return sd.get_method(name[len(prefix):])
-                    except exc.MethodNotFoundError:
-                        pass
-
-        raise exc.MethodNotFoundError(name)
+        pass
 
     def register_instance(self, obj: object, prefix: str = '') -> None:
         """Create new subdispatcher and register all public object methods on
@@ -186,13 +173,7 @@ class RPCDispatcher(object):
         :type obj: object
         :param str prefix: A prefix for the new subdispatcher.
         """
-        dispatch = self.__class__()  # type: 'RPCDispatcher'
-        for name, f in inspect.getmembers(
-                obj, lambda f: callable(f) and hasattr(f, '_rpc_public_name')):
-            dispatch.add_method(f, f._rpc_public_name)
-
-        # add to dispatchers
-        self.add_subdispatch(dispatch, prefix)
+        pass
 
     def dispatch(
             self,
@@ -235,40 +216,10 @@ class RPCDispatcher(object):
             The :py:exc:`~tinyrpc.exc.ServerError` is raised for any kind of exception not
             raised by the called function itself or :py:exc:`~tinyrpc.exc.MethodNotFoundError`.
         """
-        if hasattr(request, 'create_batch_response'):
-            results = [self._dispatch(req, caller) for req in request]
-
-            response = request.create_batch_response()
-            if response is not None:
-                response.extend(results)
-
-            return response
-        else:
-            return self._dispatch(request, caller)
+        pass
 
     def _dispatch(self, request, caller):
-        try:
-            method = self.get_method(request.method)
-        except exc.MethodNotFoundError as e:
-            return request.error_respond(e)
-        except Exception:
-            # unexpected error, do not let client know what happened
-            return request.error_respond(exc.ServerError())
-
-        # we found the method
-        try:
-            if self.validator is not None:
-                self.validator(method, request.args, request.kwargs)
-            if caller is not None:
-                result = caller(method, request.args, request.kwargs)
-            else:
-                result = method(*request.args, **request.kwargs)
-        except Exception as e:
-            # an error occurred within the method, return it
-            return request.error_respond(e)
-
-        # respond with result
-        return request.respond(result)
+        pass
 
     @staticmethod
     def validate_parameters(
@@ -288,11 +239,7 @@ class RPCDispatcher(object):
         :raises ~tinyrpc.exc.InvalidParamsError:
             Raised when the provided arguments are not acceptable for `method`.
         """
-        if hasattr(method, '__code__'):
-            try:
-                inspect.getcallargs(method, *args, **kwargs)
-            except TypeError:
-                raise exc.InvalidParamsError()
+        pass
 
     validator = validate_parameters
     """Dispatched function parameter validation.

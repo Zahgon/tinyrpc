@@ -41,8 +41,7 @@ class WSServerTransport(ServerTransport):
         self.messages = queue_class()
 
         def static_wsgi_app(environ, start_response) -> str:
-            start_response("200 OK", [("Content-Type", "text/html")])
-            return 'Ready for WebSocket connection in /ws'
+            pass
 
         self.handle = Resource({
             '/':
@@ -52,10 +51,10 @@ class WSServerTransport(ServerTransport):
         })
 
     def receive_message(self) -> Tuple[Any, bytes]:
-        return self.messages.get()
+        pass
 
     def send_reply(self, context: Any, reply: bytes) -> None:
-        context.put(reply)
+        pass
 
 
 class WSApplicationFactory(object):
@@ -78,7 +77,7 @@ class WSApplicationFactory(object):
 
     @classmethod
     def protocol(cls):
-        return WebSocketApplication.protocol()
+        pass
 
 
 class WSApplication(WebSocketApplication):
@@ -89,7 +88,4 @@ class WSApplication(WebSocketApplication):
     """
     def on_message(self, msg, *args, **kwargs):
         # create new context
-        context = self._queue_class()
-        self.messages.put((context, msg))
-        response = context.get()
-        self.ws.send(response, *args, **kwargs)
+        pass

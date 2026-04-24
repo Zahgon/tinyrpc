@@ -45,10 +45,10 @@ class WsgiServerTransport(ServerTransport):
         self.allow_origin = allow_origin
 
     def receive_message(self) -> Tuple[Any, bytes]:
-        return self.messages.get()
+        pass
 
     def send_reply(self, context: Any, reply: bytes):
-        context.put(reply)
+        pass
 
     def handle(self, environ, start_response):
         """WSGI handler function.
@@ -60,41 +60,4 @@ class WsgiServerTransport(ServerTransport):
         The reply will then be sent to the client being handled and handle will
         return.
         """
-        request = Request(environ)
-        request.max_content_length = self.max_content_length
-
-        access_control_headers = {
-            'Access-Control-Allow-Methods':
-            'POST',
-            'Access-Control-Allow-Origin':
-            self.allow_origin,
-            'Access-Control-Allow-Headers':
-            'Content-Type, X-Requested-With, Accept, Origin'
-        }
-
-        post_headers = {
-            'Content-Type': 'application/json'
-        }
-
-        if request.method == 'OPTIONS':
-            response = Response(headers=access_control_headers)
-
-        elif request.method == 'POST':
-            # message is encoded in POST, read it...
-            msg = request.stream.read()
-
-            # create new context
-            context = self._queue_class()
-
-            self.messages.put((context, msg))
-
-            # collect and combine all headers
-            response_headers = dict(**access_control_headers, **post_headers)
-
-            # ...and send the reply
-            response = Response(context.get(), headers=response_headers)
-        else:
-            # nothing else supported at the moment
-            response = Response('Only POST supported', 405)
-
-        return response(environ, start_response)
+        pass

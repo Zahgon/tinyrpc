@@ -38,5 +38,4 @@ class HttpWebSocketClientTransport(ClientTransport):
         Since WebSocket maintains an open connection over multiple calls
         it must be closed explicitly.
         """
-        if self.ws is not None:
-            self.ws.close()
+        pass

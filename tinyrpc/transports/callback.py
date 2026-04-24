@@ -42,7 +42,7 @@ class CallbackServerTransport(ServerTransport):
 
         :return: A tuple consisting of ``(context, message)``.
         """
-        return None, self.reader()
+        pass
 
     def send_reply(self, context: Any, reply: bytes):
         """Sends a reply to a client.
@@ -55,5 +55,4 @@ class CallbackServerTransport(ServerTransport):
         :param any context: A context returned by :py:meth:`receive_message`.
         :param bytes reply: The reply.
         """
-
-        self.writer(reply)
+        pass

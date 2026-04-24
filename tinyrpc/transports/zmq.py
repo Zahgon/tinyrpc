@@ -22,11 +22,10 @@ class ZmqServerTransport(ServerTransport):
         self.socket = socket
 
     def receive_message(self) -> Tuple[Any, bytes]:
-        msg = self.socket.recv_multipart()
-        return msg[:-1], msg[-1]
+        pass
 
     def send_reply(self, context: Any, reply: bytes) -> None:
-        self.socket.send_multipart(context + [reply])
+        pass
 
     @classmethod
     def create(cls, zmq_context: zmq.Context, endpoint: str) -> 'ZmqServerTransport':
@@ -41,9 +40,7 @@ class ZmqServerTransport(ServerTransport):
         :param zmq_context: A 0mq context.
         :param endpoint: The endpoint clients will connect to.
         """
-        socket = zmq_context.socket(zmq.ROUTER)
-        socket.bind(endpoint)
-        return cls(socket)
+        pass
 
 
 class ZmqClientTransport(ClientTransport):
@@ -93,6 +90,4 @@ class ZmqClientTransport(ClientTransport):
         :param endpoint: The endpoint the server is bound to.
         :param timeout: Optional period in seconds to wait for reply
         """
-        socket = zmq_context.socket(zmq.REQ)
-        socket.connect(endpoint)
-        return cls(socket, timeout)
+        pass

@@ -28,11 +28,11 @@ class RPCServerGreenlets(RPCServer):
         :param list args: Arguments to ``func``.
         :param dict kwargs: Keyword arguments to ``func``.
         """
-        gevent.spawn(func, *args, **kwargs)
+        pass
 
     def start(self):
         """
         Create a Greenlet with serve_forever so you can do a gevent.joinall of
         several RPCServerGreenlets
         """
-        return gevent.spawn(self.serve_forever)
+        pass

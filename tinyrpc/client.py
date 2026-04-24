@@ -108,30 +108,7 @@ class RPCClient(object):
                          created is used.
         :return: A list with replies matching the order of the requests.
         """
-        threads = []
-
-        if 'gevent' in sys.modules:
-            # assume that gevent is available and functional, make calls in parallel
-            import gevent
-            for r in requests:
-                req = self.protocol.create_request(r.method, r.args, r.kwargs)
-                tr = r.transport.transport if len(r) == 4 else None
-                threads.append(
-                    gevent.spawn(
-                        self._send_and_handle_reply, req, False, tr, True
-                    )
-                )
-            gevent.joinall(threads)
-            return [t.value for t in threads]
-        else:
-            # call serially
-            for r in requests:
-                req = self.protocol.create_request(r.method, r.args, r.kwargs)
-                tr = r.transport.transport if len(r) == 4 else None
-                threads.append(
-                    self._send_and_handle_reply(req, False, tr, True)
-                )
-            return threads
+        pass
 
     def get_proxy(self, prefix: str = '', one_way: bool = False) -> 'RPCProxy':
         """Convenience method for creating a proxy.
@@ -140,16 +117,11 @@ class RPCClient(object):
         :param one_way: Passed on to :py:class:`~tinyrpc.client.RPCProxy`.
         :return: :py:class:`~tinyrpc.client.RPCProxy` instance.
         """
-        return RPCProxy(self, prefix, one_way)
+        pass
 
     def batch_call(self, calls: List[RPCCallTo]) -> RPCBatchResponse:
         """Experimental, use at your own peril."""
-        req = self.protocol.create_batch_request()
-
-        for call_args in calls:
-            req.append(self.protocol.create_request(*call_args))
-
-        return self._send_and_handle_reply(req)
+        pass
 
 
 class RPCProxy(object):

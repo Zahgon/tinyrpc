@@ -27,12 +27,7 @@ class FixedErrorMessageMixin(object):
         super(FixedErrorMessageMixin, self).__init__(*args, **kwargs)
 
     def error_respond(self):
-        response = MSGPACKRPCErrorResponse()
-
-        response.error = self.message
-        response.unique_id = self.request_id
-        response._msgpackrpc_error_code = self.msgpackrpc_error_code
-        return response
+        pass
 
 
 class MSGPACKRPCParseError(FixedErrorMessageMixin, InvalidRequestError):
@@ -103,26 +98,7 @@ class MSGPACKRPCErrorResponse(RPCErrorResponse):
 
 
 def _get_code_and_message(error):
-    assert isinstance(error, (Exception, str))
-    if isinstance(error, Exception):
-        if hasattr(error, "msgpackrpc_error_code"):
-            code = error.msgpackrpc_error_code
-            msg = str(error)
-        elif isinstance(error, InvalidRequestError):
-            code = MSGPACKRPCInvalidRequestError.msgpackrpc_error_code
-            msg = MSGPACKRPCInvalidRequestError.message
-        elif isinstance(error, MethodNotFoundError):
-            code = MSGPACKRPCMethodNotFoundError.msgpackrpc_error_code
-            msg = MSGPACKRPCMethodNotFoundError.message
-        else:
-            # allow exception message to propagate
-            code = MSGPACKRPCServerError.msgpackrpc_error_code
-            msg = str(error)
-    else:
-        code = -32000
-        msg = error
-
-    return code, msg
+    pass
 
 
 class MSGPACKRPCRequest(RPCRequest):
@@ -185,17 +161,7 @@ class MSGPACKRPCRequest(RPCRequest):
         :returns: An error response object that can be serialized and sent to the client.
         :rtype: ;py:class:`MSGPACKRPCErrorResponse`
         """
-        if not self.unique_id:
-            return None
-
-        response = MSGPACKRPCErrorResponse()
-        response.unique_id = None if self.one_way else self.unique_id
-
-        code, msg = _get_code_and_message(error)
-
-        response.error = msg
-        response._msgpackrpc_error_code = code
-        return response
+        pass
 
     def respond(self, result: Any) -> Optional["MSGPACKRPCSuccessResponse"]:
         """Create a response to this request.
@@ -208,15 +174,7 @@ class MSGPACKRPCRequest(RPCRequest):
         :returns: A response object that can be serialized and sent to the client.
         :rtype: :py:class:`MSGPACKRPCSuccessResponse`
         """
-        if self.one_way or self.unique_id is None:
-            return None
-
-        response = MSGPACKRPCSuccessResponse()
-
-        response.result = result
-        response.unique_id = self.unique_id
-
-        return response
+        pass
 
     def _to_list(self):
         if self.one_way or self.unique_id is None:
@@ -358,72 +316,13 @@ class MSGPACKRPCProtocol(RPCProtocol):
         :raises MSGPACKRPCParseError: if the ``data`` cannot be parsed as valid MSGPACK.
         :raises MSGPACKRPCInvalidRequestError: if the request does not comply with the standard.
         """
-        try:
-            req = msgpack.unpackb(data, raw=False)
-        except Exception:
-            raise MSGPACKRPCParseError()
-
-        if not isinstance(req, list):
-            raise MSGPACKRPCInvalidRequestError()
-
-        if len(req) < 2:
-            raise MSGPACKRPCInvalidRequestError()
-
-        if req[0] == 0:
-            # MSGPACK request
-            request_id = req[1]
-            if not isinstance(request_id, int):
-                raise MSGPACKRPCInvalidRequestError()
-
-            if len(req) == 4:
-                return self._parse_request(req)
-            else:
-                raise MSGPACKRPCInvalidRequestError(request_id=request_id)
-        elif req[0] == 2:
-            # MSGPACK notification
-            if len(req) == 3:
-                return self._parse_notification(req)
-            else:
-                raise MSGPACKRPCInvalidRequestError()
-        else:
-            raise MSGPACKRPCInvalidRequestError()
+        pass
 
     def _parse_notification(self, req):
-        if not isinstance(req[1], str):
-            raise MSGPACKRPCInvalidRequestError()
-
-        request = MSGPACKRPCRequest()
-        request.one_way = True
-        request.method = req[1]
-
-        params = req[2]
-        # params should not be None according to the spec; if there are
-        # no params, an empty array must be used
-        if isinstance(params, list):
-            request.args = params
-        else:
-            raise MSGPACKRPCInvalidParamsError(request_id=req[1])
-
-        return request
+        pass
 
     def _parse_request(self, req):
-        if not isinstance(req[2], str):
-            raise MSGPACKRPCInvalidRequestError(request_id=req[1])
-
-        request = MSGPACKRPCRequest()
-        request.one_way = False
-        request.method = req[2]
-        request.unique_id = req[1]
-
-        params = req[3]
-        # params should not be None according to the spec; if there are
-        # no params, an empty array must be used
-        if isinstance(params, list):
-            request.args = params
-        else:
-            raise MSGPACKRPCInvalidParamsError(request_id=req[1])
-
-        return request
+        pass
 
     def raise_error(
         self, error: Union["MSGPACKRPCErrorResponse", Dict[str, Any]]
